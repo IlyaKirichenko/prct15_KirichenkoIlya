@@ -5,10 +5,11 @@ using System.Linq;
 
 namespace prct15
 {
+    // Класс для хранения слова и его страниц
     public class Predmet
     {
-        public string Word { get; set; }
-        public ArrayList Pages { get; set; }
+        public string Word { get; set; } // Слово
+        public ArrayList Pages { get; set; } // Страницы
 
         public Predmet(string word, int page)
         {
@@ -17,10 +18,12 @@ namespace prct15
         }
     }
 
+    // Класс для работы с указателем
     public class PredUkaz
     {
-        public ArrayList Items { get; private set; } = new ArrayList();
+        public ArrayList Items { get; private set; } = new ArrayList(); // Список всех элементов в указателе
 
+        // Метод для добавления нового слова и страницы
         public void Add(string word, int page)
         {
             foreach (Predmet item in Items)
@@ -28,26 +31,28 @@ namespace prct15
                 if (item.Word == word)
                 {
                     if (!item.Pages.Contains(page) && item.Pages.Count < 10)
-                        item.Pages.Add(page);
+                        item.Pages.Add(page); // Если слово уже есть, добавляем страницу
                     return;
                 }
             }
-            Items.Add(new Predmet(word, page));
+            Items.Add(new Predmet(word, page)); // Если слова нет, добавляем его
         }
 
+        // Метод для редактирования существующего слова и страниц
         public void Edit(string oldWord, string newWord, ArrayList newPages)
         {
             foreach (Predmet item in Items)
             {
                 if (item.Word == oldWord)
                 {
-                    item.Word = newWord;
-                    item.Pages = newPages;
+                    item.Word = newWord; // Изменяем слово
+                    item.Pages = newPages; // Изменяем страницы
                     return;
                 }
             }
         }
 
+        // Метод для удаления слова из указателя
         public void Delete(string word)
         {
             for (int i = 0; i < Items.Count; i++)
@@ -55,17 +60,18 @@ namespace prct15
                 Predmet item = (Predmet)Items[i];
                 if (item.Word == word)
                 {
-                    Items.RemoveAt(i);
+                    Items.RemoveAt(i); // Удаляем слово
                     return;
                 }
             }
         }
 
+        // Метод для загрузки данных из файла
         public void LoadFromFile(string path)
         {
             if (!File.Exists(path)) return;
 
-            Items.Clear();
+            Items.Clear(); // Очищаем текущие элементы
             foreach (var line in File.ReadAllLines(path))
             {
                 var parts = line.Split(':');
@@ -78,10 +84,11 @@ namespace prct15
                 for (int i = 1; i < pages.Length && i < 10; i++)
                     item.Pages.Add(pages[i]);
 
-                Items.Add(item);
+                Items.Add(item); // Добавляем в коллекцию
             }
         }
 
+        // Метод для сохранения данных в файл
         public void SaveToFile(string path)
         {
             var lines = new ArrayList();
