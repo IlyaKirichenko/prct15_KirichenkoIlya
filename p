@@ -26,43 +26,39 @@ namespace prct15
         // Метод для добавления нового слова и страницы
         public void Add(string word, int page)
         {
-            foreach (Predmet item in Items)
+            // Используем LINQ для поиска элемента по слову
+            var existingItem = Items.Cast<Predmet>().FirstOrDefault(item => item.Word == word);
+            if (existingItem != null)
             {
-                if (item.Word == word)
-                {
-                    if (!item.Pages.Contains(page) && item.Pages.Count < 10)
-                        item.Pages.Add(page); // Если слово уже есть, добавляем страницу
-                    return;
-                }
+                // Если слово найдено, добавляем страницу, если ее еще нет, и если количество страниц меньше 10
+                if (!existingItem.Pages.Contains(page) && existingItem.Pages.Count < 10)
+                    existingItem.Pages.Add(page);
             }
-            Items.Add(new Predmet(word, page)); // Если слова нет, добавляем его
+            else
+            {
+                // Если слово не найдено, добавляем новый элемент
+                Items.Add(new Predmet(word, page));
+            }
         }
 
         // Метод для редактирования существующего слова и страниц
         public void Edit(string oldWord, string newWord, ArrayList newPages)
         {
-            foreach (Predmet item in Items)
+            var item = Items.Cast<Predmet>().FirstOrDefault(i => i.Word == oldWord);
+            if (item != null)
             {
-                if (item.Word == oldWord)
-                {
-                    item.Word = newWord; // Изменяем слово
-                    item.Pages = newPages; // Изменяем страницы
-                    return;
-                }
+                item.Word = newWord;
+                item.Pages = newPages;
             }
         }
 
         // Метод для удаления слова из указателя
         public void Delete(string word)
         {
-            for (int i = 0; i < Items.Count; i++)
+            var itemToRemove = Items.Cast<Predmet>().FirstOrDefault(item => item.Word == word);
+            if (itemToRemove != null)
             {
-                Predmet item = (Predmet)Items[i];
-                if (item.Word == word)
-                {
-                    Items.RemoveAt(i); // Удаляем слово
-                    return;
-                }
+                Items.Remove(itemToRemove);
             }
         }
 
@@ -91,13 +87,8 @@ namespace prct15
         // Метод для сохранения данных в файл
         public void SaveToFile(string path)
         {
-            var lines = new ArrayList();
-            foreach (Predmet item in Items)
-            {
-                string line = item.Word + ":" + string.Join(",", item.Pages.Cast<int>());
-                lines.Add(line);
-            }
-            File.WriteAllLines(path, lines.Cast<string>().ToArray());
+            var lines = Items.Cast<Predmet>().Select(item => item.Word + ":" + string.Join(",", item.Pages.Cast<int>())).ToList();
+            File.WriteAllLines(path, lines);
         }
     }
 }
